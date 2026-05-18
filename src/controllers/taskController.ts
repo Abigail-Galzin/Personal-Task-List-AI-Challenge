@@ -80,4 +80,27 @@ export class TaskController {
             res.status(500).json({ message: error.message || 'Internal Server Error' });
         }
     }
+
+    deleteTask = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+
+            //ToDo Validator
+            if (!id) {
+                res.status(400).json({ message: 'Invalid data request.' });
+                return;
+            }
+
+            const deleted = await this.taskService.deleteTask(id?.toString() ?? '');
+
+            if (deleted === null) {
+                res.status(404).json({ message: 'Task not found.' });
+                return;
+            }
+            deleted ? res.sendStatus(204) : res.status(500).json({ message: 'Task was not deleted.'});
+            return;
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Internal Server Error' });
+        }
+    }
 }

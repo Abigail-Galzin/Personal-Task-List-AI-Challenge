@@ -21,6 +21,28 @@ export class Task {
     this.updatedAt = new Date();
   }
 
+  static fromJSON(data: {
+    id: string;
+    title: string;
+    status: Status;
+    description: string;
+    dueDate: string;
+    createdAt: string;
+    updatedAt: string;
+  }): Task {
+    const task = Object.create(Task.prototype) as Task;
+    Object.assign(task, {
+      id: data.id,
+      title: data.title,
+      status: data.status,
+      description: data.description,
+      dueDate: new Date(data.dueDate),
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
+    });
+    return task;
+  }
+
   getStatus(): string {
     return this.status;
   }

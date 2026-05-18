@@ -10,7 +10,7 @@
     As a user, I want to create a task with a title, description and due date so that I can organize and prioritize my personal work efficiently.  
 
     Scenario: Successful task creation with valid data  
-    Given the API is running and the database is accessible  
+    Given the API is running and the application is accessible  
     When a POST request is sent to /task with a valid description  
     Then the system should return a 201 Created status code  
     And the response body must include a unique ID and the initial status as "PENDING".  
@@ -28,13 +28,19 @@
     Given an existing task with ID {id} and status "PENDING"  
     When a PATCH request is sent to /task/{id} with the field completed: true  
     Then the system should return a 200 OK  
-    And the task's status in the database must reflect "COMPLETED".  
+    And the response body should contain a message task's status in the application must reflect "COMPLETED".
 
-    Scenario: Attempt to complete a non-existing task
-    Given no task exists with the provided id
-    When a PATCH request is sent to /task/{id}
-    Then the system should return a 404 Not Found status code
-    And the response body should contain an error message indicating the task was not found.
+    Scenario: Successfully mark a task as pending  
+    Given an existing task with ID {id} and status "COMPLETED"  
+    When a PATCH request is sent to /task/{id} with the field completed: false  
+    Then the system should return a 200 OK  
+    And the response body should contain a message task's status in the application must reflect "PENDING".  
+
+    Scenario: Attempt to complete a non-existing task  
+    Given no task exists with the provided id  
+    When a PATCH request is sent to /task/{id}  
+    Then the system should return a 404 Not Found status code  
+    And the response body should contain an error message indicating the task was not found.  
 
 3. **Feature 3: Edit Task**  
 
@@ -45,7 +51,7 @@
     When a PUT request is sent to /task/{id} with a new (field) text  
     Then the system should return a 200 OK status code  
     And the response body should include: the same task id, updated (field), updatedAt timestamp  
-    And the new description must be persisted in the database.  
+    And the new description must be persisted in the application.  
 
     Scenario: Reject update with empty (field)  
     Given an existing task with ID {id}  
@@ -61,7 +67,7 @@
     Given an existing task with ID {id}  
     When a DELETE request is sent to /task/{id}  
     Then the system should return a 204 No Content status code  
-    And the task must be permanently removed from the database.  
+    And the task must be permanently removed from the application.  
 
     Scenario: Attempt to delete a non-existing task  
     Given no task exists with ID {id}  
@@ -69,7 +75,7 @@
     Then the system should return a 404 Not Found status code  
     And the response body should contain an error message indicating the task was not found.  
 
-5. **Feature 5: Dynamic Priority Evaluation (Due Date Constraints)**
+5. **Feature 5: Dynamic Priority Evaluation (Due Date Constraints)**  
     As a system background process  
     I want to dynamically evaluate a task's priority based on the current time and its `dueDate`  
     So that the user always sees real-time accurate urgency statuses.  
@@ -112,7 +118,7 @@
 
     | title       | "Project Report"        |
     | description | "Finish project report" |
-    | dueDate     | "2026-05-20T12:00:00Z"  |
+    | dueDate     | "2026-05-20"            |
 
 **Business Rules**  
 - title is required during task creation.

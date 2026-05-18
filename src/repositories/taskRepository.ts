@@ -1,11 +1,12 @@
 import { Task } from '../models/Task';
-
+import { TaskFields } from '../constants';
 export interface ITaskRepository {
     createTask(taskData: any): Task;
     getTask(id: string): Task | null;
     getAll(): Task[];
-    updateTask(task: Task, completed: boolean): boolean;
-}
+    updateTaskStatus(task: Task, completed: boolean): boolean;
+    updateTask(task: Task, taskFields: TaskFields): Task;
+};
 
 export class TaskRepository implements ITaskRepository {
     private tasks: Task[] = [];
@@ -29,7 +30,11 @@ export class TaskRepository implements ITaskRepository {
         return this.tasks;
     }
 
-    updateTask(task: Task, completed: boolean): boolean {
+    updateTaskStatus(task: Task, completed: boolean): boolean {
         return completed ? task.completeTask() : task.reopenTask();
+    }
+
+    updateTask(task: Task, taskFields: TaskFields): Task {
+        return task.updateTaskFields(taskFields);
     }
 }

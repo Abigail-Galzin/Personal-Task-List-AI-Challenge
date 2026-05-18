@@ -5,6 +5,7 @@ export interface ITaskService {
     createTask(title: string, dueDate: Date, description: string): Promise<Task>;
     getAllTasks(): Promise<Task[]>;
     updateStatus(id: string, completed: boolean) : Promise<boolean | null>;
+    updateTask(id: string, title: string, dueDate: Date, description: string): Promise<Task | null>;
 }
 
 export class TaskService implements ITaskService {
@@ -42,6 +43,21 @@ export class TaskService implements ITaskService {
             return null;
         }
 
-        return await this.taskRepository.updateTask(currentTask, completed);
+        return await this.taskRepository.updateTaskStatus(currentTask, completed);
+    }
+
+    async updateTask(id: string, title: string, dueDate: Date, description: string): Promise<Task | null> {
+        const currentTask = await this.getTask(id);
+
+        if(!currentTask) {
+            return null;
+        }
+
+        const taskFields = Object.fromEntries(
+            Object.entries({ title, dueDate, description })
+                  .filter(([_, val]) => val !== null && val !== undefined)
+        );
+
+        return await this.taskRepository.updateTask(currentTask, taskFields);
     }
 }

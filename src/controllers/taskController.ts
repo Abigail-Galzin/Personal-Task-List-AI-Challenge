@@ -32,7 +32,7 @@ export class TaskController {
 
             const updated = await this.taskService.updateStatus(id?.toString() ?? '', completed);
 
-            if(updated === null) {
+            if (updated === null) {
                 res.status(404).json({ message: 'Task not found.' });
                 return;
             }
@@ -42,7 +42,31 @@ export class TaskController {
                 res.status(400).json({ message: `Task already ${status}.` });
                 return;
             }
-            res.status(200).json({ message:  `Task updated to ${status}.` });
+            res.status(200).json({ message: `Task updated to ${status}.` });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Internal Server Error' });
+        }
+    }
+
+    updateTask = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const { title, dueDate, description } = req.body;
+
+            //ToDo Validator
+            if (!id || (!title && !dueDate && !description)) {
+                res.status(400).json({ message: 'Invalid data request.' });
+                return;
+            }
+
+            const taskUpdated = await this.taskService.updateTask(id?.toString() ?? '', title, dueDate, description);
+
+            if (taskUpdated === null) {
+                res.status(404).json({ message: 'Task not found.' });
+                return;
+            }
+
+            res.status(200).json(taskUpdated);
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Internal Server Error' });
         }

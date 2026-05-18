@@ -9,5 +9,6 @@ const taskService = new TaskService(taskRepository);
 const taskController = new TaskController(taskService);
 
 router.post('/', taskController.createTask);
-router.get('/', taskController.getAllTasks)
+router.get('/', taskController.getAllTasks);
+router.patch('/:id', taskController.updateTaskStatus);
 export default router;

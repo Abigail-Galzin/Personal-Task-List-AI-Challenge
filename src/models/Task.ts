@@ -20,4 +20,24 @@ export class Task {
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
+
+  getStatus(): string {
+    return this.status;
+  }
+
+  completeTask(): boolean {
+    if (this.status === Status.Completed) {
+      return false;
+    }
+    this.status = Status.Completed;
+    return true;
+  }
+
+  reopenTask(): boolean {
+    if (this.status === Status.Pending) {
+      return false;
+    }
+    this.status = Status.Pending;
+    return true;
+  }
 }

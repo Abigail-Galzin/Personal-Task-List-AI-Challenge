@@ -28,13 +28,19 @@
     Given an existing task with ID {id} and status "PENDING"  
     When a PATCH request is sent to /task/{id} with the field completed: true  
     Then the system should return a 200 OK  
-    And the task's status in the application must reflect "COMPLETED".  
+    And the response body should contain a message task's status in the application must reflect "COMPLETED".
 
-    Scenario: Attempt to complete a non-existing task
-    Given no task exists with the provided id
-    When a PATCH request is sent to /task/{id}
-    Then the system should return a 404 Not Found status code
-    And the response body should contain an error message indicating the task was not found.
+    Scenario: Successfully mark a task as pending  
+    Given an existing task with ID {id} and status "COMPLETED"  
+    When a PATCH request is sent to /task/{id} with the field completed: false  
+    Then the system should return a 200 OK  
+    And the response body should contain a message task's status in the application must reflect "PENDING".  
+
+    Scenario: Attempt to complete a non-existing task  
+    Given no task exists with the provided id  
+    When a PATCH request is sent to /task/{id}  
+    Then the system should return a 404 Not Found status code  
+    And the response body should contain an error message indicating the task was not found.  
 
 3. **Feature 3: Edit Task**  
 
@@ -69,7 +75,7 @@
     Then the system should return a 404 Not Found status code  
     And the response body should contain an error message indicating the task was not found.  
 
-5. **Feature 5: Dynamic Priority Evaluation (Due Date Constraints)**
+5. **Feature 5: Dynamic Priority Evaluation (Due Date Constraints)**  
     As a system background process  
     I want to dynamically evaluate a task's priority based on the current time and its `dueDate`  
     So that the user always sees real-time accurate urgency statuses.  

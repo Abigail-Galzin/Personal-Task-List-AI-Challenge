@@ -18,7 +18,12 @@ export class TaskController {
                 res.status(400).json({ message: 'Title and dueDate are required.' });
                 return;
             }
-            const task = await this.taskService.createTask(title, new Date(dueDate), description);
+
+            const task = await this.taskService.createTask({
+                title: title,
+                dueDate: dueDate,
+                description: description
+            });
             res.status(201).json(task);
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Internal Server Error' });
@@ -39,7 +44,7 @@ export class TaskController {
 
             const status = completed ? Status.Completed : Status.Completed;
             if (!updated) {
-                res.status(400).json({ message: `Task already ${status}.` });
+                res.status(400).json({ message: `Invalid request: Task already ${status}.` });
                 return;
             }
             res.status(200).json({ message: `Task updated to ${status}.` });
@@ -59,7 +64,12 @@ export class TaskController {
                 return;
             }
 
-            const taskUpdated = await this.taskService.updateTask(id?.toString() ?? '', title, dueDate, description);
+            const taskUpdated = await this.taskService.updateTask({
+                id: id?.toString() ?? '',
+                title,
+                dueDate,
+                description
+            });
 
             if (taskUpdated === null) {
                 res.status(404).json({ message: 'Task not found.' });
@@ -97,7 +107,7 @@ export class TaskController {
                 res.status(404).json({ message: 'Task not found.' });
                 return;
             }
-            deleted ? res.sendStatus(204) : res.status(500).json({ message: 'Task was not deleted.'});
+            deleted ? res.sendStatus(204) : res.status(500).json({ message: 'Task was not deleted.' });
             return;
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Internal Server Error' });

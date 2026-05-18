@@ -1,11 +1,12 @@
 import { ITaskRepository } from '../repositories/taskRepository';
 import { Task } from '../models/Task';
+import { TaskInput, TaskInputPut, TaskOutput } from '../constants';
 
 export interface ITaskService {
-    createTask(title: string, dueDate: Date, description: string): Promise<Task>;
-    getAllTasks(): Promise<Task[]>;
+    createTask(taskInput: TaskInput): Promise<TaskOutput>;
+    getAllTasks(): Promise<TaskOutput[]>;
     updateStatus(id: string, completed: boolean): Promise<boolean | null>;
-    updateTask(id: string, title: string, dueDate: Date, description: string): Promise<Task | null>;
+    updateTask(taskInput: TaskInputPut): Promise<TaskOutput | null>;
     deleteTask(id: string): Promise<boolean | null>;
 }
 
@@ -16,14 +17,8 @@ export class TaskService implements ITaskService {
         this.taskRepository = taskRepository;
     }
 
-    async createTask(title: string, dueDate: Date, description: string): Promise<Task> {
-        const taskData = {
-            title: title,
-            dueDate: dueDate,
-            description: description
-        }
-
-        return await this.taskRepository.createTask(taskData);
+    async createTask(taskInput: TaskInput): Promise<TaskOutput> {
+        return await this.taskRepository.createTask(taskInput);
     }
 
     async getTask(id: string): Promise<Task | null> {
@@ -33,7 +28,7 @@ export class TaskService implements ITaskService {
         return await this.taskRepository.getTask(id);
     }
 
-    async getAllTasks(): Promise<Task[]> {
+    async getAllTasks(): Promise<TaskOutput[]> {
         return await this.taskRepository.getAll();
     }
 
@@ -47,15 +42,15 @@ export class TaskService implements ITaskService {
         return await this.taskRepository.updateTaskStatus(currentTask, completed);
     }
 
-    async updateTask(id: string, title: string, dueDate: Date, description: string): Promise<Task | null> {
-        const currentTask = await this.getTask(id);
+    async updateTask(taskInput: TaskInputPut): Promise<TaskOutput | null> {
+        const currentTask = await this.getTask(taskInput.id);
 
         if (!currentTask) {
             return null;
         }
 
         const taskFields = Object.fromEntries(
-            Object.entries({ title, dueDate, description })
+            Object.entries(taskInput)
                 .filter(([_, val]) => val !== null && val !== undefined)
         );
 

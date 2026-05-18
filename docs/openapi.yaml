@@ -99,7 +99,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Invalid request body
+          description: Invalid request
         '404':
           description: Task not found
         '500':
@@ -167,9 +167,9 @@ components:
           example: "Complete the quarterly report for the client"
         dueDate:
           type: string
-          format: date-time
-          description: Due date in ISO 8601 format (only date matters for priority)
-          example: "2026-05-20T12:00:00Z"
+          format: date
+          description: Due date (only date matters for priority)
+          example: "2026-05-20"
       required:
         - title
         - dueDate
@@ -186,10 +186,16 @@ components:
           type: string
           description: New description
           example: "Updated description here"
+        dueDate:
+          type: string
+          format: date
+          description: New Due date
+          example: "2026-06-20"
       minProperties: 1
       anyOf:
         - required: [title]
         - required: [description]
+        - required: [dueDate]
 
     Task:
       type: object

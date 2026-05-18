@@ -30,5 +30,6 @@ export interface TaskOutput {
     status: string,
     priority: string,
     dueDate: string,
+    createdAt: string,
     updatedAt: string,
 }

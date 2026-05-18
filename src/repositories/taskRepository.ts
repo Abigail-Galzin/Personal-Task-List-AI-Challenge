@@ -49,7 +49,6 @@ export class TaskRepository implements ITaskRepository {
         let taskSize = this.tasks.length;
         this.tasks = this.tasks.filter(task => task.id !== id);
         taskStorage.save(this.tasks);
-        console.log(this.tasks);
         return taskSize - 1 === this.tasks.length;
     }
 }

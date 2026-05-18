@@ -4,6 +4,7 @@ import { TaskInput, TaskInputPut, TaskOutput } from '../constants';
 
 export interface ITaskService {
     createTask(taskInput: TaskInput): Promise<TaskOutput>;
+    getTask(id: string): Promise<Task | null>;
     getAllTasks(): Promise<TaskOutput[]>;
     updateStatus(id: string, completed: boolean): Promise<boolean | null>;
     updateTask(taskInput: TaskInputPut): Promise<TaskOutput | null>;
@@ -29,7 +30,26 @@ export class TaskService implements ITaskService {
     }
 
     async getAllTasks(): Promise<TaskOutput[]> {
-        return await this.taskRepository.getAll();
+        const tasks = await this.taskRepository.getAll();
+        const rank = (priority: string): number => {
+            switch (priority) {
+                case 'OVERDUE':
+                    return 0;
+                case 'URGENT':
+                    return 1;
+                default:
+                    return 2;
+            }
+        };
+
+        return [...tasks].sort((taskA, taskB) => {
+            const priorityDifference = rank(taskA.priority) - rank(taskB.priority);
+            if (priorityDifference !== 0) {
+                return priorityDifference;
+            }
+
+            return new Date(taskA.dueDate).getTime() - new Date(taskB.dueDate).getTime();
+        });
     }
 
     async updateStatus(id: string, completed: boolean): Promise<boolean | null> {
@@ -51,7 +71,7 @@ export class TaskService implements ITaskService {
 
         const taskFields = Object.fromEntries(
             Object.entries(taskInput)
-                .filter(([_, val]) => val !== null && val !== undefined)
+                .filter(([key, val]) => key !== 'id' && val !== null && val !== undefined)
         );
 
         return await this.taskRepository.updateTask(currentTask, taskFields);

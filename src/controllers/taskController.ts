@@ -30,6 +30,28 @@ export class TaskController {
         }
     }
 
+    getTask = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                res.status(400).json({ message: 'Invalid data request.' });
+                return;
+            }
+
+            const task = await this.taskService.getTask(id?.toString());
+
+            if (!task) {
+                res.status(404).json({ message: 'Task not found.' });
+                return;
+            }
+
+            res.status(200).json(task);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Internal Server Error' });
+        }
+    }
+
     updateTaskStatus = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
@@ -42,7 +64,7 @@ export class TaskController {
                 return;
             }
 
-            const status = completed ? Status.Completed : Status.Completed;
+            const status = completed ? Status.Completed : Status.Pending;
             if (!updated) {
                 res.status(400).json({ message: `Invalid request: Task already ${status}.` });
                 return;

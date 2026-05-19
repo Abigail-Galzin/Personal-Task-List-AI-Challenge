@@ -108,7 +108,7 @@ export class Task {
             description: this.description,
             status: this.status,
             priority: this.getPriority(),
-            dueDate: Task.toDate(this.dueDate).toISOString().split('T')[0] ?? this.dueDate.toString(),
+            dueDate: this.dueDate.toISOString(),
             createdAt: this.createdAt.toISOString(),
             updatedAt: this.updatedAt.toISOString(),
         }

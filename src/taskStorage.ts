@@ -10,11 +10,15 @@ export const taskStorage = {
     },
 
     load(): Task[] {
-        if (!fs.existsSync(FILE_PATH)) {
-            return [];
+        try {
+            if (!fs.existsSync(FILE_PATH)) {
+                return [];
+            }
+            const fileData = fs.readFileSync(FILE_PATH, 'utf-8');
+            const rawTasks = JSON.parse(fileData) as Parameters<typeof Task.fromJSON>[0][];
+            return rawTasks.map((data) => Task.fromJSON(data));
+        } catch (error) {
+            throw new Error('Task storage unavailable or corrupted');
         }
-        const fileData = fs.readFileSync(FILE_PATH, 'utf-8');
-        const rawTasks = JSON.parse(fileData) as Parameters<typeof Task.fromJSON>[0][];
-        return rawTasks.map((data) => Task.fromJSON(data));
     }
 };

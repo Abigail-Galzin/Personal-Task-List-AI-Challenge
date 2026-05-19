@@ -98,7 +98,7 @@ describe('TaskService', () => {
             priority: Priorities.normal,
             dueDate: '2026-05-21T12:00:00.000Z',
         });
-        repository.getAll.mockResolvedValue([normal, overdue, urgent]);
+        repository.getAll.mockResolvedValue([overdue, normal, urgent]);
 
         const result = await service.getAllTasks();
 

@@ -11,9 +11,11 @@ export interface ITaskRepository {
 };
 
 export class TaskRepository implements ITaskRepository {
-    private tasks: Task[] = taskStorage.load();;
+    private tasks: Task[];
 
-    constructor() { }
+    constructor() {
+        this.tasks = taskStorage.load();
+    }
 
     createTask(taskInput: TaskInput): TaskOutput {
         const newTask = new Task(taskInput);
@@ -28,9 +30,7 @@ export class TaskRepository implements ITaskRepository {
     }
 
     getAll(): TaskOutput[] {
-        const sorted = [...this.tasks].sort((taskA, taskB) => taskA.getDueDate().getTime() - taskB.getDueDate().getTime());
-
-        return sorted.map(task => task.toOutput());
+        return this.tasks.map(task => task.toOutput());
     }
 
     updateTaskStatus(task: Task, completed: boolean): boolean {

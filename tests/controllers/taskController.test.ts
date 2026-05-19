@@ -99,7 +99,7 @@ describe('TaskController', () => {
         expect(service.createTask).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-            message: 'Title and dueDate are required.',
+            message: 'Title is required.',
         });
     });
 

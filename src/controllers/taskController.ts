@@ -13,16 +13,20 @@ export class TaskController {
         try {
             const { title, dueDate, description } = req.body;
 
-            //ToDo Validator
-            if (!title || !dueDate) {
-                res.status(400).json({ message: 'Title and dueDate are required.' });
+            if (typeof title !== 'string' || title.trim() === '') {
+                res.status(400).json({ message: 'Title is required.' });
+                return;
+            }
+
+            if (typeof dueDate !== 'string' || Number.isNaN(Date.parse(dueDate))) {
+                res.status(400).json({ message: 'dueDate must be a valid date string.' });
                 return;
             }
 
             const task = await this.taskService.createTask({
-                title: title,
+                title: title.trim(),
                 dueDate: dueDate,
-                description: description
+                description: typeof description === 'string' ? description.trim() : ''
             });
             res.status(201).json(task);
         } catch (error: any) {
@@ -80,7 +84,6 @@ export class TaskController {
             const { id } = req.params;
             const { title, dueDate, description } = req.body;
 
-            //ToDo Validator
             if (!id || (!title && !dueDate && !description)) {
                 res.status(400).json({ message: 'Invalid data request.' });
                 return;
@@ -117,7 +120,6 @@ export class TaskController {
         try {
             const { id } = req.params;
 
-            //ToDo Validator
             if (!id) {
                 res.status(400).json({ message: 'Invalid data request.' });
                 return;

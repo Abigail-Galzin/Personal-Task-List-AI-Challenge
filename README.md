@@ -81,7 +81,6 @@ No required environment variables are needed to run the project. The API works o
 
 ```bash
 PORT=3000
-NODE_ENV=development
 ```
 
 `PORT` is optional and defaults to `3000` when not provided. `NODE_ENV` is also optional and only affects the error response detail level.

@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Personal Task AI List
+  version: 1.0.0
+  description: API for managing daily tasks with dynamic priority based on dueDate.
+servers:
+  - url: https://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.example.com/api/v1
+    description: Production server
+
+paths:
+  '/task':
+    get:
+      summary: Get all the tasks
+      description: Returns all tasks sorted by urgency (OVERDUE → URGENT → NORMAL)
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskList"
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid input (e.g., missing title, invalid dueDate)
+        '500':
+          description: Internal server error
+
+  '/task/{id}':
+    get:
+      summary: "Get one specific task"
+      operationId: getTask
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the task
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+    patch:
+      summary: Mark a task as completed
+      description: Changes task status from "PENDING" to "COMPLETED"
+      operationId: completeTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                completed:
+                  type: boolean
+                  example: true
+              required:
+                - completed
+      responses:
+        '200':
+          description: Task marked as completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update task title description or due date
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid input (e.g., empty title)
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a task
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Task deleted successfully (no content)
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    TaskInput:
+      type: object
+      description: Required fields for creating a new task
+      properties:
+        title:
+          type: string
+          description: Task title (required)
+          example: "Finish project report"
+        description:
+          type: string
+          description: Optional detailed description
+          example: "Complete the quarterly report for the client"
+        dueDate:
+          type: string
+          format: date
+          description: Due date (only date matters for priority)
+          example: "2026-05-20"
+      required:
+        - title
+        - dueDate
+
+    TaskUpdate:
+      type: object
+      description: Fields that can be updated
+      properties:
+        title:
+          type: string
+          description: New title (cannot be empty)
+          example: "Updated project title"
+        description:
+          type: string
+          description: New description
+          example: "Updated description here"
+        dueDate:
+          type: string
+          format: date
+          description: New Due date
+          example: "2026-06-20"
+      minProperties: 1
+      anyOf:
+        - required: [title]
+        - required: [description]
+        - required: [dueDate]
+
+    Task:
+      type: object
+      description: Full task object as returned by the API
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+          example: "task_123"
+        title:
+          type: string
+          example: "Finish project report"
+        description:
+          type: string
+          example: "Complete the quarterly report"
+        status:
+          type: string
+          enum: ["PENDING", "COMPLETED"]
+          description: Manual status (set by user)
+          example: "PENDING"
+        priority:
+          type: string
+          enum: ["OVERDUE", "URGENT", "NORMAL"]
+          description: Dynamically calculated based on dueDate
+          example: "URGENT"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2026-05-20T12:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-05-17T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-05-17T10:00:00Z"
+
+    TaskList:
+      type: array
+      description: List of all tasks sorted by urgency
+      items:
+        $ref: '#/components/schemas/Task'

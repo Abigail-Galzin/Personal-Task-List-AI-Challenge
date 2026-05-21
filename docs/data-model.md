@@ -2,7 +2,7 @@ classDiagram
 class Task {
     -String id
     -String title
-    -String status
+    -String status // "PENDING" | "COMPLETED"
     -String description
     -DateTime dueDate
     -DateTime createdAt
@@ -10,5 +10,5 @@ class Task {
     +create()
     +update()
     +delete()
-    +getPriority()
+    +getPriority() // returns "OVERDUE" | "URGENT" | "NORMAL"
 }
